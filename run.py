@@ -68,6 +68,8 @@ class Graph:
                     queue.append(i)
                     visited[i] = True
 
+        self.run_time = time.time() - start_time
+
         # print group_a
         # print group_b
         for edge, judgement in judgements.items():
@@ -78,12 +80,12 @@ class Graph:
             if judgement == 'same':
                 if (int(u) in group_a and int(v) in group_b) or (int(u) in group_b and int(v) in group_a):
                     self.consistency = False
-                    break
+                    # break
             if judgement == 'different':
                 if (int(u) in group_a and int(v) in group_a) or (int(u) in group_b and int(v) in group_b):
                     self.consistency = False
-                    break
-        self.run_time = time.time() - start_time
+                    # break
+
 
 def brute_force(judgements, num_samples):
     consistency = True
@@ -187,7 +189,8 @@ def main():
 
     print "\n**********Brute Force Solution for first {} samples**********".format(small_sample_size)
     for i, judgements in enumerate(data['samples'][:small_sample_size]):
-        consistency = brute_force(judgements, i + 2)
+        num_node = i+2
+        consistency = brute_force(judgements, num_node)
         if consistency:
             print "Judgements were consistent"
         else:
@@ -195,8 +198,9 @@ def main():
 
     print "\n**********BFS Solution for first {} samples**********".format(small_sample_size)
     for i, judgements in enumerate(data['samples'][:small_sample_size]):
+        num_node = i+2
         g = Graph()
-        g.generateGraph(i + 2)
+        g.generateGraph(num_node)
 
         # print g.graph
         # print ("Following is Breadth First Traversal ""(starting from vertex 2)")
@@ -208,19 +212,22 @@ def main():
 
 
     print "\n**********BFS Solution for all generated samples**********".format(large_sample_size)
-    runtime = {"runtime": []}
+    runtime = {"nodes":[],"runtime":[]}
     for i, judgements in enumerate(data['samples']):
+        num_node = i+2
         g = Graph()
-        g.generateGraph(i + 2)
+        g.generateGraph(num_node)
 
         # print g.graph
         # print ("Following is Breadth First Traversal ""(starting from vertex 2)")
         g.BFS(1, judgements)
-        if g.consistency == True:
-            print "Judgements were consistent."
-        else:
-            print "Judgements were inconsistent."
+        # if g.consistency == True:
+        #     print "Judgements were consistent."
+        # else:
+        #     print "Judgements were inconsistent."
 
+        # print num_node, g.run_time
+        runtime["nodes"].append(num_node)
         runtime["runtime"].append(g.run_time)
 
     write_to_file(json.dumps(runtime, indent=4), "runtime.json")
