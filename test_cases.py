@@ -21,7 +21,7 @@ def write_to_file(content, filename = 'tmp.txt'):
 
 if __name__ == '__main__':
     print "Generating samples...(might take some time)"
-    num_samples = 10
+    num_samples = 400
     test_cases = {"samples": []}
     for n in range(2,num_samples+2):
         if n%50 == 0:
