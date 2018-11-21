@@ -52,10 +52,10 @@ class Graph:
             if s!= starting_node:
                 judgement = judgements['{}-{}'.format(s, starting_node)] if starting_node > s \
                     else judgements['{}-{}'.format(starting_node, s)]  # get_judgement
-                if judgement == 'same':
+                if judgement == 's':
                     group_a.append(s)
 
-                elif judgement == 'different':
+                elif judgement == 'd':
                     group_b.append(s)
 
             # Get all adjacent vertices of the
@@ -68,8 +68,8 @@ class Graph:
                     queue.append(i)
                     visited[i] = True
 
-        self.run_time = time.time() - start_time
 
+        self.run_time = time.time() - start_time
         # print group_a
         # print group_b
         for edge, judgement in judgements.items():
@@ -77,14 +77,15 @@ class Graph:
             u_v = edge.split("-")
             u = u_v[0]
             v = u_v[1]
-            if judgement == 'same':
+            if judgement == 's':
                 if (int(u) in group_a and int(v) in group_b) or (int(u) in group_b and int(v) in group_a):
                     self.consistency = False
-                    # break
-            if judgement == 'different':
+                    break
+            if judgement == 'd':
                 if (int(u) in group_a and int(v) in group_a) or (int(u) in group_b and int(v) in group_b):
                     self.consistency = False
-                    # break
+                    break
+
 
 
 def brute_force(judgements, num_samples):
@@ -108,20 +109,20 @@ def brute_force(judgements, num_samples):
         for species_2 in range(species_1 + 1, num_samples):
             judgement = judgements["{}-{}".format(species_1, species_2)]
             if i == 0:
-                if judgement == 'same':
+                if judgement == 's':
                     A.append(species_2)
-                elif judgement == 'different':
+                elif judgement == 'd':
                     B.append(species_2)
 
             elif i != 0:
                 if species_1 in group_a[0]:
-                    if judgement == 'same':
+                    if judgement == 's':
                         A.append(species_2)
                         if species_2 in group_b[0]:
                             # print "Brute Force Solution: Judgements were inconsistent"
                             consistency = False
                             break
-                    elif judgement == 'different':
+                    elif judgement == 'd':
                         B.append(species_2)
                         if species_2 in group_a[0]:
                             # print "Brute Force Solution: Judgements were inconsistent"
@@ -129,14 +130,14 @@ def brute_force(judgements, num_samples):
                             break
 
                 elif species_1 in group_b[0]:
-                    if judgement == 'same':
+                    if judgement == 's':
                         B.append(species_2)
                         if species_2 in group_a[0]:
                             # print "Brute Force Solution: Judgements were inconsistent"
                             consistency = False
                             break
 
-                    elif judgement == 'different':
+                    elif judgement == 'd':
                         A.append(species_2)
                         if species_2 in group_b[0]:
                             # print "Brute Force Solution: Judgements were inconsistent"
@@ -155,32 +156,7 @@ def brute_force(judgements, num_samples):
 
 
 def main():
-    # num_samples = 2
-    # judgements = {'0-1': 'same',
-    #               '0-2': 'same',
-    #               '0-3': 'different',
-    #               '0-4': 'different',
-    #               '1-2': 'same',
-    #               '1-3': 'different',
-    #               '1-4': 'different',
-    #               '2-3': 'different',
-    #               '2-4': 'different',
-    #               '3-4': 'same'}
-
-    # judgements = test_cases.generate_test_samples(num_samples)
-    # print judgements
-    # g = Graph()
-    # g.generateGraph(num_samples)
-    #
-    # print g.graph
-    # print ("Following is Breadth First Traversal "
-    #        "(starting from vertex 2)")
-    # g.BFS(1)
-    # if g.consistency==True:
-    #     print "Judgements were consistent."
-    # else:
-    #     print "Judgements were inconsistent."
-
+    print "Loading all test samples..."
     with open(test_cases.FILE_NAME) as f:
         data = json.load(f)
 
@@ -188,38 +164,48 @@ def main():
     large_sample_size = 1000
 
     print "\n**********Brute Force Solution for first {} samples**********".format(small_sample_size)
+    brute_force_solutions = []
     for i, judgements in enumerate(data['samples'][:small_sample_size]):
         num_node = i+2
         consistency = brute_force(judgements, num_node)
         if consistency:
-            print "Judgements were consistent"
+            print "Test case {}: Judgements were consistent.".format(i)
+            brute_force_solutions.append(True)
         else:
-            print "Judgements were inconsistent"
+            print "Test case {}: Judgements were inconsistent.".format(i)
+            brute_force_solutions.append(False)
+
 
     print "\n**********BFS Solution for first {} samples**********".format(small_sample_size)
+    time.sleep(2)
+    bfs_solutions = []
     for i, judgements in enumerate(data['samples'][:small_sample_size]):
         num_node = i+2
         g = Graph()
         g.generateGraph(num_node)
-
         # print g.graph
-        # print ("Following is Breadth First Traversal ""(starting from vertex 2)")
+        # print ("Following is the BFS implementation")
         g.BFS(1, judgements)
         if g.consistency == True:
-            print "Judgements were consistent."
+            print "Test case {}: Judgements were consistent.".format(i)
+            bfs_solutions.append(True)
         else:
-            print "Judgements were inconsistent."
+            print "Test case {}: Judgements were inconsistent.".format(i)
+            bfs_solutions.append(False)
 
 
-    print "\n**********BFS Solution for all generated samples**********".format(large_sample_size)
+    if bfs_solutions == brute_force_solutions:
+        print "\nTest cases validated for small n"
+    else:
+        print "\nTest cases could not validate for small n"
+    print "\n**********Implementing algorithm for all generated samples**********".format(large_sample_size)
+    time.sleep(2)
     runtime = {"nodes":[],"runtime":[]}
     for i, judgements in enumerate(data['samples']):
         num_node = i+2
         g = Graph()
         g.generateGraph(num_node)
 
-        # print g.graph
-        # print ("Following is Breadth First Traversal ""(starting from vertex 2)")
         g.BFS(1, judgements)
         # if g.consistency == True:
         #     print "Judgements were consistent."
@@ -231,6 +217,7 @@ def main():
         runtime["runtime"].append(g.run_time)
 
     write_to_file(json.dumps(runtime, indent=4), "runtime.json")
+    print "Done."
 
 
 

@@ -8,9 +8,10 @@ with open('runtime.json') as f:
 x = data["nodes"]
 y = data["runtime"]
 
+print "\n\nPlotting Performance Validation graph for large n"
 plt.plot(x, y)
-plt.xlabel('Time Step')
-plt.ylabel('Number of nodes')
-plt.title('Dynamic Graph')
+plt.xlabel('Number of nodes')
+plt.ylabel('Time(in seconds)')
+plt.title('Runtime')
 plt.legend()
 plt.show()
