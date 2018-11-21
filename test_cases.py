@@ -10,7 +10,7 @@ def generate_test_samples(num_nodes):
     for i in range(num_nodes):
         for j in range(i + 1, num_nodes):
             choice = random.choice(['s', 'd'])
-            choice = np.random.choice(['s', 'd'], 1, p=[0.8, 0.2])[0]
+            choice = np.random.choice(['s', 'd'], 1, p=[0.9, 0.1])[0]
             judgements["{}-{}".format(i, j)] = choice
     return judgements
 
